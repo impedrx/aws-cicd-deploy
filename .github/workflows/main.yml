@@ -28,12 +28,12 @@ jobs:
       # 🐳 Build da imagem Docker
       - name: Build da imagem
         run: |
-          docker build -t my-app .   # 🔧 Pode mudar o nome "my-app"
+          docker build -t annterms ./terms-n-tools
 
       # 🏷️ Tag da imagem (IMPORTANTE)
       - name: Tag da imagem
         run: |
-          docker tag my-app:latest 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
+          docker tag annterms:latest 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
           # 🔧 TROCAR:
           # 142280718316 → seu AWS Account ID
           # us-east-2 → sua região
