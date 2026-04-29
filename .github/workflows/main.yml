@@ -58,6 +58,11 @@ jobs:
           username: ec2-user                   # 🔧 pode ser "ubuntu" dependendo da AMI
           key: ${{ secrets.EC2_SSH_KEY }}      # 🔧 CRIAR SECRET COM SUA .pem
           script: |
+            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 142280718316.dkr.ecr.us-east-2.amazonaws.com
+              # 🧹 Limpar containers antigos
+            docker stop $(docker ps -q) || true
+            docker rm $(docker ps -aq) || true
+
             # 🔄 Puxar nova imagem
             docker pull 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
 
