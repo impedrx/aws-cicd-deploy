@@ -71,4 +71,4 @@ jobs:
             docker rm app || true
 
             # ▶️ Subir novo container
-            docker run -d -p 9090:9090 --name app 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
+            docker run -d -p 9090:80 --name app 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
