@@ -54,7 +54,7 @@ jobs:
       - name: Deploy na EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 18.216.139.1                   # 🔧 IP DA SUA EC2
+          host: ${{ secrets.EC2_HOST }}                   # 🔧
           username: ec2-user                   # 🔧 pode ser "ubuntu" dependendo da AMI
           key: ${{ secrets.EC2_SSH_KEY }}      # 🔧 CRIAR SECRET COM SUA .pem
           script: |
