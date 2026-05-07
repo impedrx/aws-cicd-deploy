@@ -10,6 +10,7 @@ import { useEquipmentTypes } from '@/hooks/useEquipmentTypes';
 import { subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { exportToExcel } from '@/lib/excelExport';
 import { useToast } from '@/hooks/use-toast';
+import { useTenant } from '@/contexts/TenantContext';
 
 const PERIOD_OPTIONS = [
   { value: 'all', label: 'Todo o período' },
@@ -24,19 +25,24 @@ export default function Dashboard() {
   const [periodFilter, setPeriodFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const { data: equipmentTypes = [] } = useEquipmentTypes();
+  const { effectiveClientId, isAdmin } = useTenant();
 
   const { data: equipment } = useQuery({
-    queryKey: ['equipment-full'],
+    queryKey: ['equipment-full', effectiveClientId],
     queryFn: async () => {
-      const { data } = await supabase.from('equipment').select('*');
+      let q = supabase.from('equipment').select('*');
+      if (isAdmin && effectiveClientId) q = q.eq('client_id', effectiveClientId);
+      const { data } = await q;
       return data || [];
     },
   });
 
   const { data: terms } = useQuery({
-    queryKey: ['terms-full'],
+    queryKey: ['terms-full', effectiveClientId],
     queryFn: async () => {
-      const { data } = await supabase.from('responsibility_terms').select('*');
+      let q = supabase.from('responsibility_terms').select('*');
+      if (isAdmin && effectiveClientId) q = q.eq('client_id', effectiveClientId);
+      const { data } = await q;
       return data || [];
     },
   });
@@ -134,6 +140,16 @@ export default function Dashboard() {
 
   const maxTypeCount = Math.max(...eqByType.map(t => t.count), 1);
 
+  // Alertas de estoque: tipos com disponíveis abaixo do limiar definido
+  const stockAlerts = equipmentTypes
+    .filter(t => (t.min_stock_alert || 0) > 0)
+    .map(t => ({
+      name: t.name,
+      available: allEquipment.filter(e => e.type === t.name && e.status === 'disponivel').length,
+      min: t.min_stock_alert,
+    }))
+    .filter(a => a.available <= a.min);
+
   return (
     <div className="animate-fade-in space-y-8">
       {/* Header */}
@@ -172,6 +188,32 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Alertas de Estoque */}
+      {stockAlerts.length > 0 && (
+        <div>
+          <div className="section-label">
+            <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Alertas de Estoque
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {stockAlerts.map(a => (
+              <Card key={a.name} className="border-l-[3px] border-l-warning bg-warning/5">
+                <CardContent className="p-4 flex items-start gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-warning/15 flex-shrink-0">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold truncate">{a.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      <span className="font-bold text-warning">{a.available}</span> disponíve{a.available === 1 ? 'l' : 'is'} (mínimo: {a.min})
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Equipment Stats */}
       <div>
