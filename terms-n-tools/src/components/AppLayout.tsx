@@ -5,10 +5,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, PanelLeft } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { HelpDialog } from '@/components/HelpDialog';
 import { ImpersonationBanner } from '@/components/ImpersonationBanner';
+import { useClientTheme } from '@/hooks/useClientTheme';
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { signOut, user } = useAuth();
+  useClientTheme();
 
   return (
     <SidebarProvider>
@@ -29,6 +32,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <span className="text-xs text-muted-foreground font-medium max-w-[200px] truncate">{user?.email}</span>
               </div>
               <ThemeToggle />
+              <HelpDialog />
               <Button variant="ghost" size="icon" onClick={signOut} title="Sair" className="h-8 w-8 text-muted-foreground hover:text-destructive">
                 <LogOut className="h-4 w-4" />
               </Button>
