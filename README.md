@@ -1,6 +1,6 @@
 # aws-cicd-deploy
 
-Pipeline de CI/CD completa para build, publicação e deploy automatizado do [Aerrnova IT Tools](https://github.com/seu-usuario/aws-infra-terraform) em ambiente AWS com Docker.
+Pipeline de CI/CD completa para build, publicação e deploy automatizado do [Aerrnova IT Tools](https://github.com/ImPedrx/aws-infra-terraform) em ambiente AWS com Docker.
 
 ## Visão Geral
 
@@ -82,7 +82,7 @@ Secrets configurados no GitHub:
 
 ## Repositório Relacionado
 
-- [aws-infra-terraform](https://github.com/seu-usuario/aws-infra-terraform) — Repositório de infraestrutura com Terraform
+- [aws-infra-terraform](https://github.com/ImPedrx/aws-infra-terraform) — Repositório de infraestrutura com Terraform
 
 ---
 
