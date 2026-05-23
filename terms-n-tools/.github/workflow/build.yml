@@ -40,8 +40,8 @@ jobs:
       - name: Tag e Push pro ECR
         run: |
           IMAGE_TAG=${{ steps.tag.outputs.IMAGE_TAG }}
-          docker tag my-app:latest 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:$IMAGE_TAG
-          docker push 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:$IMAGE_TAG
+          docker tag my-app:latest 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:$IMAGE_TAG
+          docker push 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:$IMAGE_TAG
 
   # ─────────────────────────────────────────────
   # Deploy automático quando há push na branch dev
@@ -60,11 +60,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             aws ecr get-login-password --region us-east-2 | \
-              docker login --username AWS --password-stdin 142280718316.dkr.ecr.us-east-2.amazonaws.com
-            docker pull 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:dev
+              docker login --username AWS --password-stdin 559487953529.dkr.ecr.us-east-2.amazonaws.com
+            docker pull 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:dev
             docker stop app || true
             docker rm app || true
-            docker run -d -p 80:80 --name app 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:dev
+            docker run -d -p 80:80 --name app 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:dev
 
   # ─────────────────────────────────────────────
   # Deploy automático quando há push na branch staging
@@ -83,11 +83,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             aws ecr get-login-password --region us-east-2 | \
-              docker login --username AWS --password-stdin 142280718316.dkr.ecr.us-east-2.amazonaws.com
-            docker pull 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:staging
+              docker login --username AWS --password-stdin 559487953529.dkr.ecr.us-east-2.amazonaws.com
+            docker pull 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:staging
             docker stop app || true
             docker rm app || true
-            docker run -d -p 80:80 --name app 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:staging
+            docker run -d -p 80:80 --name app 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:staging
 
   # ─────────────────────────────────────────────
   # Deploy automático quando há push na branch main (PRODUÇÃO)
@@ -106,11 +106,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             aws ecr get-login-password --region us-east-2 | \
-              docker login --username AWS --password-stdin 142280718316.dkr.ecr.us-east-2.amazonaws.com
-            docker pull 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
+              docker login --username AWS --password-stdin 559487953529.dkr.ecr.us-east-2.amazonaws.com
+            docker pull 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
             docker stop app || true
             docker rm app || true
-            docker run -d -p 80:80 --name app 142280718316.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
+            docker run -d -p 80:80 --name app 559487953529.dkr.ecr.us-east-2.amazonaws.com/pedrx12356:latest
 
   # ─────────────────────────────────────────────
   # Instalação do Zabbix na EC2 dedicada de monitoramento
