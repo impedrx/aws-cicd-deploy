@@ -67,4 +67,4 @@ jobs:
             docker pull $IMAGE
             docker stop $(docker ps -q) || true
             docker rm $(docker ps -aq) || true
-            docker run -d -p 9090:80 --name app $IMAGE
+            docker run -d -p 80:80 --name app $IMAGE
