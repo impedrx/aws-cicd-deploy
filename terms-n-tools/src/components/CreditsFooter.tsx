@@ -1,4 +1,4 @@
-import { Linkedin, Github, Heart } from 'lucide-react';
+import { Linkedin, Github } from 'lucide-react';
 
 export function CreditsFooter({ collapsed }: { collapsed?: boolean }) {
   if (collapsed) {
@@ -18,7 +18,7 @@ export function CreditsFooter({ collapsed }: { collapsed?: boolean }) {
   return (
     <div className="px-3 py-3 space-y-2">
       <p className="text-[10px] text-sidebar-foreground/40 text-center font-medium flex items-center justify-center gap-1">
-        Desenvolvido com <Heart className="h-2.5 w-2.5 text-red-500 fill-red-500" /> por <span className="font-bold text-sidebar-foreground/70">Pedrx</span>
+        Desenvolvido por <span className="font-bold text-sidebar-foreground/70">Pedrx</span>
       </p>
       <div className="flex justify-center gap-2">
         <a href="https://www.linkedin.com/in/pedrx/" target="_blank" rel="noopener noreferrer"
