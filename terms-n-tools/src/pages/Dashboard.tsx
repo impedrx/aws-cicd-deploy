@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Monitor, CheckCircle2, Clock, Wrench, Package, FileText, Send, XCircle, Download, BarChart3, TrendingUp, AlertTriangle, Activity } from 'lucide-react';
+import { Monitor, CheckCircle2, Clock, Wrench, Package, FileText, Send, XCircle, Download, BarChart3, TrendingUp, AlertTriangle } from 'lucide-react';
 import { EQUIPMENT_STATUS } from '@/lib/constants';
 import { useEquipmentTypes } from '@/hooks/useEquipmentTypes';
 import { subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
@@ -123,19 +123,19 @@ export default function Dashboard() {
   };
 
   const statsCards = [
-    { label: 'Total', value: eqStats.total, icon: Monitor, color: 'text-primary', bg: 'bg-primary/10', border: 'border-l-primary' },
-    { label: 'Disponíveis', value: eqStats.disponivel, icon: Package, color: 'text-success', bg: 'bg-success/10', border: 'border-l-success' },
-    { label: 'Entregues', value: eqStats.entregue, icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10', border: 'border-l-primary' },
-    { label: 'Manutenção', value: eqStats.manutencao, icon: Wrench, color: 'text-warning', bg: 'bg-warning/10', border: 'border-l-warning' },
-    { label: 'Baixados', value: eqStats.baixado, icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-l-destructive' },
+    { label: 'Total', value: eqStats.total, icon: Monitor, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Disponíveis', value: eqStats.disponivel, icon: Package, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Entregues', value: eqStats.entregue, icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Manutenção', value: eqStats.manutencao, icon: Wrench, color: 'text-warning', bg: 'bg-warning/10' },
+    { label: 'Baixados', value: eqStats.baixado, icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/10' },
   ];
 
   const termCards = [
-    { label: 'Total', value: termStats.total, icon: FileText, color: 'text-primary', bg: 'bg-primary/10', border: 'border-l-primary' },
-    { label: 'Pendentes', value: termStats.pendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10', border: 'border-l-warning' },
-    { label: 'Enviados', value: termStats.enviado, icon: Send, color: 'text-primary', bg: 'bg-primary/10', border: 'border-l-primary' },
-    { label: 'Fechados', value: termStats.fechado, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', border: 'border-l-success' },
-    { label: 'Cancelados', value: termStats.cancelado, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-l-destructive' },
+    { label: 'Total', value: termStats.total, icon: FileText, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Pendentes', value: termStats.pendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' },
+    { label: 'Enviados', value: termStats.enviado, icon: Send, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Fechados', value: termStats.fechado, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Cancelados', value: termStats.cancelado, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10' },
   ];
 
   const maxTypeCount = Math.max(...eqByType.map(t => t.count), 1);
@@ -153,21 +153,14 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-in space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 shadow-lg shadow-primary/20">
-              <Activity className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="page-title">Dashboard</h1>
-              <p className="page-description">Visão geral do sistema de TI</p>
-            </div>
-          </div>
+          <h1 className="page-title">Dashboard</h1>
+          <p className="page-description">Visão geral do sistema de TI</p>
         </div>
         <div className="flex gap-2 flex-wrap items-center">
           <Select value={periodFilter} onValueChange={setPeriodFilter}>
-            <SelectTrigger className="w-[180px] h-10 text-sm rounded-xl bg-card">
+            <SelectTrigger className="w-[180px] h-9 text-sm bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -175,7 +168,7 @@ export default function Dashboard() {
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[160px] h-10 text-sm rounded-xl bg-card">
+            <SelectTrigger className="w-[150px] h-9 text-sm bg-card">
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
             <SelectContent>
@@ -183,7 +176,7 @@ export default function Dashboard() {
               {equipmentTypes.map(t => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={exportExcel} className="h-10 rounded-xl gap-2 font-semibold">
+          <Button variant="outline" onClick={exportExcel} className="h-9 gap-2 text-sm font-medium">
             <Download className="h-4 w-4" /> Exportar
           </Button>
         </div>
@@ -192,20 +185,20 @@ export default function Dashboard() {
       {/* Alertas de Estoque */}
       {stockAlerts.length > 0 && (
         <div>
-          <div className="section-label">
-            <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Alertas de Estoque
-          </div>
+          <p className="section-label">
+            <AlertTriangle className="h-3 w-3 text-warning" /> Alertas de Estoque
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {stockAlerts.map(a => (
-              <Card key={a.name} className="border-l-[3px] border-l-warning bg-warning/5">
-                <CardContent className="p-4 flex items-start gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-warning/15 flex-shrink-0">
+              <Card key={a.name} className="border border-warning/30 bg-warning/5">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/15 flex-shrink-0">
                     <AlertTriangle className="h-4 w-4 text-warning" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold truncate">{a.name}</p>
+                    <p className="text-sm font-semibold truncate">{a.name}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      <span className="font-bold text-warning">{a.available}</span> disponíve{a.available === 1 ? 'l' : 'is'} (mínimo: {a.min})
+                      <span className="font-bold text-warning">{a.available}</span> disponíve{a.available === 1 ? 'l' : 'is'} · mínimo: {a.min}
                     </p>
                   </div>
                 </CardContent>
@@ -217,25 +210,25 @@ export default function Dashboard() {
 
       {/* Equipment Stats */}
       <div>
-        <div className="section-label">
-          <Monitor className="h-3.5 w-3.5" /> Equipamentos
-        </div>
+        <p className="section-label">
+          <Monitor className="h-3 w-3" /> Equipamentos
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {statsCards.map((stat) => (
-            <Card key={stat.label} className={`stat-card-accent ${stat.border} border-l-[3px]`}>
+            <Card key={stat.label} className="stat-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${stat.bg}`}>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.bg}`}>
                     <stat.icon className={`h-4 w-4 ${stat.color}`} />
                   </div>
                   {eqStats.total > 0 && stat.label !== 'Total' && (
-                    <span className="text-[11px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-muted-foreground/70">
                       {Math.round((stat.value / eqStats.total) * 100)}%
                     </span>
                   )}
                 </div>
-                <div className="text-2xl font-extrabold tracking-tight">{stat.value}</div>
-                <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">{stat.label}</p>
+                <div className="text-3xl font-bold tracking-tight">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
@@ -244,25 +237,25 @@ export default function Dashboard() {
 
       {/* Term Stats */}
       <div>
-        <div className="section-label">
-          <FileText className="h-3.5 w-3.5" /> Termos de Responsabilidade
-        </div>
+        <p className="section-label">
+          <FileText className="h-3 w-3" /> Termos de Responsabilidade
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {termCards.map((stat) => (
-            <Card key={stat.label} className={`stat-card-accent ${stat.border} border-l-[3px]`}>
+            <Card key={stat.label} className="stat-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${stat.bg}`}>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.bg}`}>
                     <stat.icon className={`h-4 w-4 ${stat.color}`} />
                   </div>
                   {termStats.total > 0 && stat.label !== 'Total' && (
-                    <span className="text-[11px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-muted-foreground/70">
                       {Math.round((stat.value / termStats.total) * 100)}%
                     </span>
                   )}
                 </div>
-                <div className="text-2xl font-extrabold tracking-tight">{stat.value}</div>
-                <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">{stat.label}</p>
+                <div className="text-3xl font-bold tracking-tight">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1 font-medium">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
@@ -273,19 +266,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Equipment by type */}
         <Card className="shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="h-3.5 w-3.5 text-primary" />
-              </div>
+          <CardHeader className="pb-3 pt-5 px-5">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
               Distribuição por Tipo
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-2">
-            <div className="space-y-3">
+          <CardContent className="px-5 pb-5 pt-0">
+            <div className="space-y-4">
               {eqByType.length === 0 && (
                 <div className="text-center py-8">
-                  <Monitor className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                  <Monitor className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Nenhum equipamento cadastrado</p>
                 </div>
               )}
@@ -294,16 +285,16 @@ export default function Dashboard() {
                 const barWidth = Math.round((t.count / maxTypeCount) * 100);
                 return (
                   <div key={t.label}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-semibold">{t.label}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-foreground">{t.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-foreground">{t.count}</span>
-                        <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-semibold">{pct}%</span>
+                        <span className="text-sm font-bold text-foreground">{t.count}</span>
+                        <span className="text-[10px] text-muted-foreground/60 font-medium w-7 text-right">{pct}%</span>
                       </div>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-muted/60 rounded-full h-1.5 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-primary to-primary/60 h-2.5 rounded-full transition-all duration-700 ease-out"
+                        className="bg-primary h-1.5 rounded-full transition-all duration-700 ease-out"
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
@@ -316,16 +307,14 @@ export default function Dashboard() {
 
         {/* Equipment by status */}
         <Card className="shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                <BarChart3 className="h-3.5 w-3.5 text-primary" />
-              </div>
+          <CardHeader className="pb-3 pt-5 px-5">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
               Distribuição por Status
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-2">
-            <div className="space-y-3">
+          <CardContent className="px-5 pb-5 pt-0">
+            <div className="space-y-4">
               {EQUIPMENT_STATUS.map(s => {
                 const count = allEquipment.filter(e => e.status === s.value).length;
                 if (count === 0) return null;
@@ -334,22 +323,22 @@ export default function Dashboard() {
                 const barWidth = Math.round((count / maxSt) * 100);
                 return (
                   <div key={s.value}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-semibold">{s.label}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-foreground">{s.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-foreground">{count}</span>
-                        <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-semibold">{pct}%</span>
+                        <span className="text-sm font-bold text-foreground">{count}</span>
+                        <span className="text-[10px] text-muted-foreground/60 font-medium w-7 text-right">{pct}%</span>
                       </div>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                      <div className={`${s.color} h-2.5 rounded-full transition-all duration-700 ease-out`} style={{ width: `${barWidth}%` }} />
+                    <div className="w-full bg-muted/60 rounded-full h-1.5 overflow-hidden">
+                      <div className={`${s.color} h-1.5 rounded-full transition-all duration-700 ease-out`} style={{ width: `${barWidth}%` }} />
                     </div>
                   </div>
                 );
               })}
               {allEquipment.length === 0 && (
                 <div className="text-center py-8">
-                  <BarChart3 className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                  <BarChart3 className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Nenhum dado disponível</p>
                 </div>
               )}

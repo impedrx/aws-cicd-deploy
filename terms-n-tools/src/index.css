@@ -111,16 +111,16 @@
   }
 
   .page-title {
-    @apply text-2xl font-extrabold tracking-tight text-foreground;
+    @apply text-2xl font-bold tracking-tight text-foreground;
   }
 
   .page-description {
-    @apply text-sm text-muted-foreground mt-1.5;
+    @apply text-sm text-muted-foreground mt-1;
   }
 
-  /* Professional card styles */
+  /* Clean card — no translate on hover */
   .stat-card {
-    @apply bg-card rounded-xl border p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+    @apply bg-card rounded-xl border p-5 shadow-sm transition-shadow duration-200 hover:shadow-md;
   }
 
   .stat-card-accent {
@@ -144,7 +144,7 @@
   }
 
   .pro-table thead {
-    @apply bg-muted/50;
+    @apply bg-muted/40;
   }
 
   .pro-table thead th {
@@ -152,21 +152,21 @@
   }
 
   .pro-table tbody tr {
-    @apply border-b border-border/50 transition-colors hover:bg-muted/30;
+    @apply border-b border-border/40 transition-colors hover:bg-muted/20;
   }
 
   .pro-table tbody td {
-    @apply py-3 px-4 text-sm;
+    @apply py-3.5 px-4 text-sm;
   }
 
   /* Section headings */
   .section-label {
-    @apply text-[11px] font-bold text-muted-foreground uppercase tracking-[0.12em] mb-4 flex items-center gap-2;
+    @apply text-[10px] font-bold text-muted-foreground/70 uppercase tracking-[0.15em] mb-4 flex items-center gap-2;
   }
 
   /* Glass morphism header */
   .glass-header {
-    @apply bg-card/70 backdrop-blur-xl border-b sticky top-0 z-10;
+    @apply bg-card/80 backdrop-blur-xl border-b sticky top-0 z-10;
   }
 
   /* Gradient text */
@@ -177,5 +177,15 @@
   /* Badge styles */
   .status-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide;
+  }
+
+  /* Dot grid background pattern */
+  .dot-grid {
+    background-image: radial-gradient(circle, hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .dark .dot-grid {
+    background-image: radial-gradient(circle, hsl(var(--foreground) / 0.08) 1px, transparent 1px);
   }
 }
