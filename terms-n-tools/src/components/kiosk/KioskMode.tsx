@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEquipmentTypes } from '@/hooks/useEquipmentTypes';
 import { useKioskNotices, type KioskNotice } from '@/hooks/useKioskNotices';
+import { useSettings } from '@/hooks/useSettings';
 import { useTenant } from '@/contexts/TenantContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,7 +29,9 @@ import {
   BarChart3,
   TrendingUp,
   Settings2,
+  Bell,
 } from 'lucide-react';
+import type { Notice } from '@/hooks/useSettings';
 
 interface Props {
   open: boolean;
@@ -45,6 +48,7 @@ interface Slide {
 
 export function KioskMode({ open, onClose }: Props) {
   const { config } = useKioskNotices();
+  const { data: settings } = useSettings();
   const { data: equipmentTypes = [] } = useEquipmentTypes();
   const { effectiveClientId, isAdmin } = useTenant();
 
@@ -260,6 +264,9 @@ export function KioskMode({ open, onClose }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Notices banner */}
+      <NoticesBanner notices={(settings?.notices ?? []).filter((n) => n.active)} />
 
       {/* Slide indicators */}
       <div className="flex items-center justify-center gap-1.5 py-4 border-t border-border bg-card/60">
@@ -488,6 +495,63 @@ function ByStatusSlide({ equipment }: { equipment: any[] }) {
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NoticesBanner({ notices }: { notices: Notice[] }) {
+  const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    if (notices.length <= 1) return;
+    const id = window.setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % notices.length);
+        setFading(false);
+      }, 300);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [notices.length]);
+
+  useEffect(() => { setIdx(0); }, [notices.length]);
+
+  if (notices.length === 0) return null;
+
+  const notice = notices[idx];
+
+  return (
+    <div className="border-t border-border bg-card/80 backdrop-blur px-8 py-5 flex items-center gap-6">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 flex-shrink-0">
+        <Bell className="h-6 w-6 text-primary" />
+      </div>
+      <div
+        className="flex-1 min-w-0 transition-opacity duration-300"
+        style={{ opacity: fading ? 0 : 1 }}
+      >
+        {notice.title && (
+          <p className="text-sm font-bold text-primary uppercase tracking-wider mb-0.5">
+            {notice.title}
+          </p>
+        )}
+        <p className="text-lg font-medium text-foreground leading-snug">{notice.text}</p>
+      </div>
+      {notices.length > 1 && (
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex gap-1.5 items-center">
+            {notices.map((_, i) => (
+              <div
+                key={i}
+                className={`rounded-full transition-all duration-300 ${
+                  i === idx ? 'w-5 h-2 bg-primary' : 'w-2 h-2 bg-muted-foreground/30'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm text-muted-foreground font-semibold">{idx + 1}/{notices.length}</span>
         </div>
       )}
     </div>

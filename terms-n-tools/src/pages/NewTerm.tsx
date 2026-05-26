@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,27 +20,12 @@ export default function NewTerm() {
   const [ticketNumber, setTicketNumber] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [serialSearch, setSerialSearch] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [activeSuggestion, setActiveSuggestion] = useState(-1);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: settings } = useSettings();
   const { data: types = [] } = useEquipmentTypes();
   const { effectiveClientId, isAdmin } = useTenant();
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
-          inputRef.current && !inputRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
 
   const { data: equipment } = useQuery({
     queryKey: ['equipment-available', effectiveClientId],
@@ -65,23 +50,6 @@ export default function NewTerm() {
   const filteredEquipment = equipment?.filter(eq => typeFilter === 'all' || eq.type === typeFilter) || [];
   const selectedEquipment = equipment?.find(e => e.id === equipmentId);
   const selectedAnalyst = analysts?.find(a => a.id === analystId);
-
-  const suggestions = serialSearch.trim().length >= 1
-    ? (equipment?.filter(eq => {
-        const q = serialSearch.trim().toUpperCase();
-        return eq.serial_number.toUpperCase().includes(q) ||
-               (eq.patrimony?.toUpperCase().includes(q) ?? false) ||
-               eq.brand.toUpperCase().includes(q) ||
-               eq.model.toUpperCase().includes(q);
-      }).slice(0, 8) ?? [])
-    : [];
-
-  const selectSuggestion = (eq: typeof suggestions[0]) => {
-    setEquipmentId(eq.id);
-    setSerialSearch(eq.serial_number);
-    setShowSuggestions(false);
-    setActiveSuggestion(-1);
-  };
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -136,65 +104,22 @@ export default function NewTerm() {
               <div className="relative">
                 <ScanBarcode className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                 <Input
-                  ref={inputRef}
                   value={serialSearch}
                   onChange={(e) => {
                     const v = e.target.value;
                     setSerialSearch(v);
-                    setActiveSuggestion(-1);
-                    setShowSuggestions(true);
                     const trimmed = v.trim().toLowerCase();
                     if (trimmed) {
                       const match = equipment?.find(eq => eq.serial_number.toLowerCase() === trimmed);
                       if (match) {
                         setEquipmentId(match.id);
-                        setShowSuggestions(false);
                         toast({ title: 'Equipamento localizado', description: `${match.brand} ${match.model}` });
                       }
-                    } else {
-                      setEquipmentId('');
                     }
                   }}
-                  onKeyDown={(e) => {
-                    if (!showSuggestions || suggestions.length === 0) return;
-                    if (e.key === 'ArrowDown') {
-                      e.preventDefault();
-                      setActiveSuggestion(i => Math.min(i + 1, suggestions.length - 1));
-                    } else if (e.key === 'ArrowUp') {
-                      e.preventDefault();
-                      setActiveSuggestion(i => Math.max(i - 1, 0));
-                    } else if (e.key === 'Enter' && activeSuggestion >= 0) {
-                      e.preventDefault();
-                      selectSuggestion(suggestions[activeSuggestion]);
-                    } else if (e.key === 'Escape') {
-                      setShowSuggestions(false);
-                    }
-                  }}
-                  onFocus={() => { if (serialSearch.trim()) setShowSuggestions(true); }}
                   placeholder="Pesquisar / bipar serial do equipamento..."
                   className="pl-9 rounded-xl"
-                  autoComplete="off"
                 />
-                {showSuggestions && suggestions.length > 0 && (
-                  <div
-                    ref={suggestionsRef}
-                    className="absolute z-50 top-full mt-1 w-full rounded-xl border bg-popover shadow-lg overflow-hidden"
-                  >
-                    {suggestions.map((eq, i) => (
-                      <button
-                        key={eq.id}
-                        type="button"
-                        onMouseDown={(e) => { e.preventDefault(); selectSuggestion(eq); }}
-                        className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between gap-2 transition-colors ${
-                          i === activeSuggestion ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/60'
-                        }`}
-                      >
-                        <span className="font-medium">{eq.serial_number}</span>
-                        <span className="text-muted-foreground text-xs truncate">{eq.brand} {eq.model} · {eq.type}{eq.patrimony ? ` · Pat: ${eq.patrimony}` : ''}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
               <div className="flex gap-2">
                 <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setEquipmentId(''); }}>

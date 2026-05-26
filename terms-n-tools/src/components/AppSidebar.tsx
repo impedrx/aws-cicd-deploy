@@ -36,25 +36,25 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent className="flex flex-col">
         {/* Brand */}
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="p-5 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sidebar-primary/20 flex-shrink-0">
-              <Shield className="h-4.5 w-4.5 text-sidebar-primary" style={{ width: '18px', height: '18px' }} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/70 shadow-lg shadow-sidebar-primary/20">
+              <Shield className="h-5 w-5 text-sidebar-primary-foreground" />
             </div>
             {!collapsed && (
               <div className="flex flex-col min-w-0">
-                <span className="font-bold text-sm text-sidebar-foreground leading-tight tracking-tight">Auksys IT Tools</span>
-                <span className="text-[10px] text-sidebar-foreground/35 font-medium leading-tight tracking-widest uppercase mt-0.5">Gestão de Ativos</span>
+                <span className="font-extrabold text-sm text-sidebar-foreground leading-tight tracking-tight">Auksys IT Tools</span>
+                <span className="text-[10px] text-sidebar-foreground/40 font-medium leading-tight tracking-wide uppercase">Gestão de Ativos</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 py-4">
+        <div className="flex-1 py-3">
           {!collapsed && (
             <div className="px-4 mb-2">
-              <span className="text-[9px] font-bold text-sidebar-foreground/25 uppercase tracking-[0.2em]">Navegação</span>
+              <span className="text-[10px] font-bold text-sidebar-foreground/30 uppercase tracking-[0.15em]">Menu</span>
             </div>
           )}
           <SidebarGroup>
@@ -66,10 +66,10 @@ export function AppSidebar() {
                       <NavLink
                         to={item.url}
                         end={item.url === '/'}
-                        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/70 transition-all duration-150"
-                        activeClassName="!bg-sidebar-primary/15 !text-sidebar-primary font-medium"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-150"
+                        activeClassName="!bg-sidebar-primary/15 !text-sidebar-primary font-semibold shadow-sm"
                       >
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <item.icon className="h-[18px] w-[18px] flex-shrink-0" />
                         {!collapsed && <span className="text-[13px]">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
@@ -84,8 +84,8 @@ export function AppSidebar() {
         <div className="border-t border-sidebar-border">
           <CreditsFooter collapsed={collapsed} />
           {!collapsed && (
-            <p className="text-[9px] text-sidebar-foreground/20 text-center font-medium pb-2 tracking-widest uppercase">
-              v1.0 · Uso interno TI
+            <p className="text-[10px] text-sidebar-foreground/25 text-center font-medium pb-2">
+              v1.0 • Uso interno TI
             </p>
           )}
         </div>

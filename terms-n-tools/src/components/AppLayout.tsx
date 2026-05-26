@@ -17,7 +17,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full relative">
+        {/* Glassmorphism gradient background */}
+        <div className="fixed inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-blue-950/60 dark:to-indigo-950" />
+          <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-blue-400/20 dark:bg-blue-500/25 rounded-full blur-3xl -translate-y-1/2" />
+          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-400/15 dark:bg-purple-500/20 rounded-full blur-3xl translate-y-1/4" />
+          <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-cyan-400/10 dark:bg-cyan-500/10 rounded-full blur-3xl -translate-x-1/4" />
+        </div>
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           {/* Professional header */}
