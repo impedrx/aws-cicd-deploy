@@ -8,10 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, FileText, Info, ScanBarcode } from 'lucide-react';
+import { Loader2, FileText, Info, ScanBarcode, ChevronsUpDown, Check, Monitor } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 import { useSettings } from '@/hooks/useSettings';
 import { useEquipmentTypes } from '@/hooks/useEquipmentTypes';
 import { useTenant } from '@/contexts/TenantContext';
+import { useCollaborators, normalizeName } from '@/hooks/useCollaborators';
 
 export default function NewTerm() {
   const [equipmentId, setEquipmentId] = useState('');
@@ -20,12 +24,14 @@ export default function NewTerm() {
   const [ticketNumber, setTicketNumber] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [serialSearch, setSerialSearch] = useState('');
+  const [collabOpen, setCollabOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: settings } = useSettings();
   const { data: types = [] } = useEquipmentTypes();
   const { effectiveClientId, isAdmin } = useTenant();
+  const { data: collaborators = [] } = useCollaborators();
 
   const { data: equipment } = useQuery({
     queryKey: ['equipment-available', effectiveClientId],
@@ -50,6 +56,12 @@ export default function NewTerm() {
   const filteredEquipment = equipment?.filter(eq => typeFilter === 'all' || eq.type === typeFilter) || [];
   const selectedEquipment = equipment?.find(e => e.id === equipmentId);
   const selectedAnalyst = analysts?.find(a => a.id === analystId);
+
+  const collabKey = normalizeName(collaboratorName);
+  const matchedCollaborator = collabKey ? collaborators.find(c => c.key === collabKey) : undefined;
+  const collabSuggestions = collabKey
+    ? collaborators.filter(c => c.key !== collabKey && c.key.includes(collabKey)).slice(0, 6)
+    : collaborators.slice(0, 6);
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -166,7 +178,47 @@ export default function NewTerm() {
 
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Nome do Colaborador</Label>
-              <Input value={collaboratorName} onChange={e => setCollaboratorName(e.target.value)} placeholder="Nome completo do colaborador" required className="rounded-xl" />
+              <Popover open={collabOpen} onOpenChange={setCollabOpen}>
+                <PopoverTrigger asChild>
+                  <Button type="button" variant="outline" role="combobox" className="w-full justify-between rounded-xl font-normal">
+                    {collaboratorName ? <span className="truncate">{collaboratorName}</span> : <span className="text-muted-foreground">Nome completo do colaborador</span>}
+                    <ChevronsUpDown className="h-4 w-4 opacity-50 flex-shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]" align="start">
+                  <Command shouldFilter={false}>
+                    <CommandInput value={collaboratorName} onValueChange={setCollaboratorName} placeholder="Digite o nome do colaborador..." />
+                    <CommandList>
+                      <CommandEmpty>Digite para cadastrar um novo colaborador.</CommandEmpty>
+                      {collabSuggestions.length > 0 && (
+                        <CommandGroup heading="Colaboradores existentes">
+                          {collabSuggestions.map(c => (
+                            <CommandItem key={c.key} value={c.displayName} onSelect={() => { setCollaboratorName(c.displayName); setCollabOpen(false); }}>
+                              <Check className={cn('mr-2 h-4 w-4', matchedCollaborator?.key === c.key ? 'opacity-100' : 'opacity-0')} />
+                              <span className="flex-1 truncate">{c.displayName}</span>
+                              <span className="text-xs text-muted-foreground ml-2">{c.equipmentCount} equip.</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {matchedCollaborator && matchedCollaborator.equipmentCount > 0 && (
+                <div className="rounded-xl border border-warning/40 bg-warning/5 p-3 text-xs space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-foreground/90">
+                    <Monitor className="h-3.5 w-3.5 text-warning" />
+                    Este colaborador já possui {matchedCollaborator.equipmentCount} equipamento(s):
+                  </div>
+                  <ul className="list-disc pl-5 text-muted-foreground space-y-0.5">
+                    {matchedCollaborator.heldEquipment.map(e => (
+                      <li key={e.id}>{e.brand} {e.model} — SN: {e.serial_number}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
