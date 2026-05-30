@@ -53,6 +53,13 @@ export default function NewTerm() {
     },
   });
 
+  const missingFields = [
+    !equipmentId && 'Equipamento',
+    !collaboratorName.trim() && 'Nome do colaborador',
+    !analystId && 'Analista responsável',
+    !ticketNumber.trim() && 'Número do chamado',
+  ].filter(Boolean) as string[];
+
   const filteredEquipment = equipment?.filter(eq => typeFilter === 'all' || eq.type === typeFilter) || [];
   const selectedEquipment = equipment?.find(e => e.id === equipmentId);
   const selectedAnalyst = analysts?.find(a => a.id === analystId);
@@ -241,7 +248,12 @@ export default function NewTerm() {
               <p className="text-sm whitespace-pre-line text-muted-foreground leading-relaxed">{settings?.term_text || 'Carregando...'}</p>
             </div>
 
-            <Button type="submit" className="w-full h-12 rounded-xl font-bold shadow-md shadow-primary/20 text-sm" disabled={createMutation.isPending || !equipmentId || !analystId || !collaboratorName || !ticketNumber}>
+            {missingFields.length > 0 && (
+              <p className="text-xs text-muted-foreground text-center">
+                Preencha para continuar: <span className="font-semibold text-foreground/80">{missingFields.join(', ')}</span>
+              </p>
+            )}
+            <Button type="submit" className="w-full h-12 rounded-xl font-bold shadow-md shadow-primary/20 text-sm" disabled={createMutation.isPending || missingFields.length > 0}>
               {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Gerar Termo de Responsabilidade
             </Button>

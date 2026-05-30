@@ -19,6 +19,8 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useTenant } from '@/contexts/TenantContext';
+import { usePagination } from '@/hooks/usePagination';
+import { TablePagination } from '@/components/TablePagination';
 import type { Database } from '@/integrations/supabase/types';
 
 type Term = Database['public']['Tables']['responsibility_terms']['Row'];
@@ -69,10 +71,19 @@ export default function TermsControl() {
       if (error) throw error;
       const { logAudit } = await import('@/lib/audit');
       await logAudit({ action: 'update', entity_type: 'term', entity_id: termId, description: `Status do termo alterado para ${newStatus}` });
+      const term = terms?.find(t => t.id === termId);
       if (newStatus === 'fechado') {
-        const term = terms?.find(t => t.id === termId);
         if (term?.equipment_id) {
           await supabase.from('equipment').update({ status: 'entregue' as const, assigned_to: term.collaborator_name, assigned_term_id: termId }).eq('id', term.equipment_id);
+        }
+      } else if (newStatus === 'cancelado') {
+        // Ao cancelar, o equipamento volta a ficar disponível — só libera
+        // se estiver vinculado a ESTE termo, para não desfazer outra atribuição.
+        if (term?.equipment_id) {
+          await supabase.from('equipment')
+            .update({ status: 'disponivel' as const, assigned_to: null, assigned_term_id: null })
+            .eq('id', term.equipment_id)
+            .eq('assigned_term_id', termId);
         }
       }
     },
@@ -122,6 +133,8 @@ export default function TermsControl() {
     return true;
   }) || [];
 
+  const pagination = usePagination(filtered, 20);
+
   return (
     <div className="animate-fade-in space-y-6">
       {/* Header */}
@@ -167,10 +180,6 @@ export default function TermsControl() {
         </Select>
       </div>
 
-      <p className="text-xs text-muted-foreground font-medium">
-        {filtered.length} termo{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
-      </p>
-
       <div className="pro-table">
         <Table>
           <TableHeader>
@@ -193,7 +202,7 @@ export default function TermsControl() {
                   <span className="text-sm">Carregando...</span>
                 </div>
               </TableCell></TableRow>
-            ) : filtered.length === 0 ? (
+            ) : pagination.total === 0 ? (
               <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                 <div className="flex flex-col items-center gap-2">
                   <FileText className="h-10 w-10 text-muted-foreground/20" />
@@ -201,7 +210,7 @@ export default function TermsControl() {
                   <span className="text-xs">Tente ajustar os filtros ou crie um novo termo</span>
                 </div>
               </TableCell></TableRow>
-            ) : filtered.map((term, i) => (
+            ) : pagination.paged.map((term, i) => (
               <TableRow key={term.id} className={i % 2 === 0 ? 'bg-transparent' : 'bg-muted/20'}>
                 <TableCell><code className="text-xs bg-muted px-2 py-1 rounded-md font-mono font-semibold">{term.ticket_number}</code></TableCell>
                 <TableCell className="font-medium text-sm">{term.collaborator_name}</TableCell>
@@ -231,6 +240,14 @@ export default function TermsControl() {
           </TableBody>
         </Table>
       </div>
+
+      <TablePagination
+        page={pagination.page} totalPages={pagination.totalPages}
+        from={pagination.from} to={pagination.to} total={pagination.total}
+        canPrev={pagination.canPrev} canNext={pagination.canNext}
+        onPrev={pagination.prev} onNext={pagination.next}
+        label="termos"
+      />
         </TabsContent>
 
         <TabsContent value="colaboradores">
