@@ -6,9 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Trash2, CheckCircle2, Send, XCircle, Plus, Search, FolderOpen, FileText } from 'lucide-react';
+import { Eye, Trash2, CheckCircle2, Send, XCircle, Plus, Search, FolderOpen, FileText, Pencil, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TermPreviewDialog } from '@/components/TermPreviewDialog';
+import { EditTermDialog } from '@/components/EditTermDialog';
+import { CollaboratorsTab } from '@/components/collaborators/CollaboratorsTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -16,6 +19,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useTenant } from '@/contexts/TenantContext';
+import type { Database } from '@/integrations/supabase/types';
+
+type Term = Database['public']['Tables']['responsibility_terms']['Row'];
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'Todos os status' },
@@ -42,6 +48,7 @@ export default function TermsControl() {
   const navigate = useNavigate();
   const [previewTermId, setPreviewTermId] = useState<string | null>(null);
   const [deleteTermId, setDeleteTermId] = useState<string | null>(null);
+  const [editTerm, setEditTerm] = useState<Term | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { effectiveClientId, isAdmin } = useTenant();
@@ -133,6 +140,13 @@ export default function TermsControl() {
         </Button>
       </div>
 
+      <Tabs defaultValue="termos" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="termos" className="gap-1.5"><FolderOpen className="h-3.5 w-3.5" /> Termos</TabsTrigger>
+          <TabsTrigger value="colaboradores" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Colaboradores</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="termos" className="space-y-6">
       {/* SharePoint reminder */}
       <div className="rounded-xl bg-primary/5 border border-primary/20 p-3 text-xs text-foreground/80 flex items-start gap-2">
         <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -199,6 +213,7 @@ export default function TermsControl() {
                 <TableCell>
                   <div className="flex gap-0.5 flex-wrap">
                     <Button variant="ghost" size="icon" onClick={() => setPreviewTermId(term.id)} title="Visualizar / Baixar PDF" className="h-8 w-8 rounded-lg hover:bg-primary/10"><Eye className="h-3.5 w-3.5" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setEditTerm(term)} title="Editar chamado / colaborador" className="h-8 w-8 rounded-lg hover:bg-primary/10"><Pencil className="h-3.5 w-3.5" /></Button>
                     {term.status === 'pendente' && (
                       <Button variant="ghost" size="icon" onClick={() => updateStatusMutation.mutate({ termId: term.id, newStatus: 'enviado_para_assinatura' })} title="Marcar como enviado" className="h-8 w-8 rounded-lg hover:bg-primary/10"><Send className="h-3.5 w-3.5 text-primary" /></Button>
                     )}
@@ -216,8 +231,15 @@ export default function TermsControl() {
           </TableBody>
         </Table>
       </div>
+        </TabsContent>
+
+        <TabsContent value="colaboradores">
+          <CollaboratorsTab />
+        </TabsContent>
+      </Tabs>
 
       {previewTermId && <TermPreviewDialog termId={previewTermId} onClose={() => setPreviewTermId(null)} />}
+      {editTerm && <EditTermDialog term={editTerm} onClose={() => setEditTerm(null)} />}
 
       <AlertDialog open={!!deleteTermId} onOpenChange={() => setDeleteTermId(null)}>
         <AlertDialogContent>
