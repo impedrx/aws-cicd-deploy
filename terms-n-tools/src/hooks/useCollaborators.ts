@@ -14,6 +14,7 @@ export interface Collaborator {
   heldEquipment: Equipment[];
   termCount: number;
   equipmentCount: number;
+  sector: string | null;
 }
 
 export function normalizeName(name: string): string {
@@ -75,9 +76,26 @@ function aggregate(terms: Term[], equipment: Equipment[]): Collaborator[] {
         heldEquipment,
         termCount: g.terms.length,
         equipmentCount: heldEquipment.length,
+        sector: deriveSector(g.terms, heldEquipment),
       };
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, 'pt-BR'));
+}
+
+// Setor preferido: termo mais recente com collaborator_sector preenchido; fallback para o
+// setor mais comum entre os equipamentos em posse.
+function deriveSector(terms: Term[], heldEquipment: Equipment[]): string | null {
+  for (const t of terms) {
+    const s = t.collaborator_sector?.trim();
+    if (s) return s;
+  }
+  const counts = new Map<string, number>();
+  for (const e of heldEquipment) {
+    const s = e.sector?.trim();
+    if (s) counts.set(s, (counts.get(s) || 0) + 1);
+  }
+  if (!counts.size) return null;
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
 }
 
 // Suggests collaborators that may be the same person: one's token list is a prefix of the

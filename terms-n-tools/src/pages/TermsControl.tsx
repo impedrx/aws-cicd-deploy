@@ -6,11 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Trash2, CheckCircle2, Send, XCircle, Plus, Search, FolderOpen, FileText, Pencil, Users } from 'lucide-react';
+import { Eye, Trash2, CheckCircle2, Send, XCircle, Plus, Search, FolderOpen, FileText, Pencil, Users, Building2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TermPreviewDialog } from '@/components/TermPreviewDialog';
 import { EditTermDialog } from '@/components/EditTermDialog';
 import { CollaboratorsTab } from '@/components/collaborators/CollaboratorsTab';
+import { SectorsTab } from '@/components/collaborators/SectorsTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -157,6 +158,7 @@ export default function TermsControl() {
         <TabsList>
           <TabsTrigger value="termos" className="gap-1.5"><FolderOpen className="h-3.5 w-3.5" /> Termos</TabsTrigger>
           <TabsTrigger value="colaboradores" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Colaboradores</TabsTrigger>
+          <TabsTrigger value="setores" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Setores</TabsTrigger>
         </TabsList>
 
         <TabsContent value="termos" className="space-y-6">
@@ -252,6 +254,10 @@ export default function TermsControl() {
 
         <TabsContent value="colaboradores">
           <CollaboratorsTab />
+        </TabsContent>
+
+        <TabsContent value="setores">
+          <SectorsTab />
         </TabsContent>
       </Tabs>
 
