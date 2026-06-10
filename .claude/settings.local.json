@@ -9,7 +9,9 @@
       "Bash(npm run *)",
       "Bash(node node_modules/vite/bin/vite.js build)",
       "Bash(git push *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(git -C C:/Users/701783/Desktop/Curso-terraform/aws-cicd-deploy push origin dev)",
+      "Bash(git add *)"
     ]
   }
 }
